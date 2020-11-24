@@ -52,8 +52,8 @@ class Principal:  # creo una clase
 
     # se puede unificar validaciones despues incluso para leer archivo client y empresa
     def Buscar_empresa(self, empresa):
-
-        buscar_empresa = []
+        empresas = []   
+        buscar_empresa = {}
         try:
             # abro el archivo con el nombre del
             with open(self.csv_cliente, 'r',  newline='', encoding='UTF-8') as file:
@@ -61,13 +61,24 @@ class Principal:  # creo una clase
                 lectura_csv = csv.DictReader(file)
                 for line in lectura_csv:
                     if empresa in line["Empresa"]:  # accedo al nombre de la columna
-                        buscar_empresa.append(line)
+                        #empresas.append(line["Empresa"])
+                        if line["Empresa"] not in buscar_empresa:
+                            buscar_empresa[line["Empresa"]] = []
+                            buscar_empresa[line["Empresa"]].append(line) 
+                        
+                        else:
+                            buscar_empresa[line["Empresa"]].append(line) 
 
         except IOError:
             print("\n Ocurrrio un error en el archivo  ")
 
-        Total_usuarios = len(buscar_empresa)
-        print(Total_usuarios)  # falta formato
+        
+        for clave_empresa in buscar_empresa:
+            print(clave_empresa)  # falta formato
+            print(len(buscar_empresa[clave_empresa]))
+            for usuario in buscar_empresa[clave_empresa]:
+                print(usuario)
+
         return buscar_empresa
 
     def Total_Ventas(self, empresa):
@@ -127,25 +138,25 @@ class Principal:  # creo una clase
             if opcion == "7":
                 exit()
 
-            if opcion == "1":
+            elif opcion == "1":
                 self.buscar_archivos()
 
-            if opcion == "2":
+            elif opcion == "2":
                 print("¿Cual cliente desea buscar? ")
                 cliente = input("")
                 self.Buscar_cliente(cliente)
 
-            if opcion == "3":
+            elif opcion == "3":
                 print("¿Cual empresa desea buscar? ")
                 empresa = input("")
                 self.Buscar_empresa(empresa)
 
-            if opcion == "4":
+            elif opcion == "4":
                 print("Digite nombre de la empresa, para ver el total de ventas ")
                 empresa = input("")
                 self.Total_Ventas(empresa)
 
-            if opcion == "5":
+            elif opcion == "5":
                 print("Digite numero de documento del empleado para ver información ")
                 empleado = input("")
 
