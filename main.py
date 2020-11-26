@@ -43,6 +43,9 @@ class Principal:  # creo una clase
                         #encontrada = True#
                         buscar_cliente.append(line)
                         print(line)
+                if len(buscar_cliente) == 0:
+                    print("En el archivo no se encuentra ningún cliente por ese nombre ")
+        
         except IOError:
             print("\n Ocurrrio un error en el archivo  ")
         except UnicodeError as error:
@@ -76,14 +79,19 @@ class Principal:  # creo una clase
         for clave_empresa in buscar_empresa:
             print(clave_empresa)  # falta formato
             print(len(buscar_empresa[clave_empresa]))
+            
+            print('        Nombre''         Dirección''       Documento''      Fecha Alta' '     Correo Electrónico''  Empresa')
             for usuario in buscar_empresa[clave_empresa]:
-                print(usuario)
+                
+                print(f"{usuario['Nombre']:25} {usuario['Dirección']:15} {usuario['Documento']:15} \
+                {usuario['Fecha Alta']:10}  {usuario['Correo Electrónico']:15} {usuario['Empresa']:10}")
 
         return buscar_empresa
 
     def Total_Ventas(self, empresa):
-        acumulador = 0
+       
         Lista_doct = []
+        Ventas_cliente = {}
 
         try:
             # apareo
@@ -103,17 +111,28 @@ class Principal:  # creo una clase
 
                 while (Cliente or Viajes):#mientras q halla un regist se ejecuta en ambos archivos
                     if Cliente:
-                        if empresa in Cliente[5]:
-                            Lista_doct.append(Cliente[2])
+                        if empresa.lower() in Cliente[5].lower():
+                            if Cliente[5] not in Ventas_cliente:
+                                Ventas_cliente[Cliente[5]] = {}
+                                Ventas_cliente[Cliente[5]]["Documento"] = []
+                                Ventas_cliente[Cliente[5]]["Documento"].append(Cliente[2]) #ingreso doc cliente
+                                Ventas_cliente[Cliente[5]]["Monto"] = 0 # acumulador se inicia dicc
+                            else:
+                                Ventas_cliente[Cliente[5]]["Documento"].append(Cliente[2])#si lo encuentra 
                         Cliente = next(Clientes_csv, None) #avanza a la siguiente linea
+                    
                     if Viajes:
-                        if Viajes[0] in Lista_doct:
-                            acumulador = float(Viajes[2]) + acumulador
+                        
+                        for cliente in Ventas_cliente.keys(): #traigo los nombres
+                            if Viajes[0] in Ventas_cliente[cliente]["Documento"]:
+                                Ventas_cliente[cliente]["Monto"] = float(Viajes[2]) + Ventas_cliente[cliente]["Monto"]
                         Viajes = next(Viajes_csv, None)
+                for cliente in Ventas_cliente.keys():
+                    print(f"{cliente} ${Ventas_cliente[cliente]['Monto'] }")
         except IOError:
             print("\n Ocurrrio un error en el archivo  ") 
 
-        print(f"El total de ventas es {acumulador}")
+        
 
     def Buscar_registros(self, Campo, Valor_buscar):
         pass
