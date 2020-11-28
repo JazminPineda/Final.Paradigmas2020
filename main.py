@@ -36,13 +36,19 @@ class Principal:  # creo una clase
                 # atributo de la clase
                 lectura_csv = csv.DictReader(file)
                 #encontrada = False#
+                for field in lectura_csv.fieldnames:
+                    print(field, end=' | ')
+                print()
                 for line in lectura_csv:
 
                     # accedo al nombre de la columna#lower todo en minuso
                     if cliente in line["Nombre"]:
                         #encontrada = True#
                         buscar_cliente.append(line)
-                        print(line)
+                        self.formato()
+                        for value in line.values():
+                            print(value, end=' | ')
+                        print()
                 if len(buscar_cliente) == 0:
                     print("En el archivo no se encuentra ningún cliente por ese nombre ")
         
@@ -63,7 +69,7 @@ class Principal:  # creo una clase
                 # atributo de la clase
                 lectura_csv = csv.DictReader(file)
                 for line in lectura_csv:
-                    if empresa in line["Empresa"]:  # accedo al nombre de la columna
+                    if empresa.lower() in line["Empresa"].lower():  # accedo al nombre de la columna
                         #empresas.append(line["Empresa"])
                         if line["Empresa"] not in buscar_empresa:
                             buscar_empresa[line["Empresa"]] = []
@@ -75,16 +81,18 @@ class Principal:  # creo una clase
         except IOError:
             print("\n Ocurrrio un error en el archivo  ")
 
-        
+        self.formato()
         for clave_empresa in buscar_empresa:
-            print(clave_empresa)  # falta formato
-            print(len(buscar_empresa[clave_empresa]))
-            
+            print(f"Empresa: {clave_empresa}")  # falta formato
+            print(f"Total Usuarios: {len(buscar_empresa[clave_empresa])}")
+            self.formato()    
+
             print('        Nombre''         Dirección''       Documento''      Fecha Alta' '     Correo Electrónico''  Empresa')
             for usuario in buscar_empresa[clave_empresa]:
                 
-                print(f"{usuario['Nombre']:25} {usuario['Dirección']:15} {usuario['Documento']:15} \
-                {usuario['Fecha Alta']:10}  {usuario['Correo Electrónico']:15} {usuario['Empresa']:10}")
+                print(f"{usuario['Nombre']:15} {usuario['Dirección']:10} {usuario['Documento']:10} \
+                {usuario['Fecha Alta']:10}  {usuario['Correo Electrónico']:10} {usuario['Empresa']:10}")
+                self.formato()    
 
         return buscar_empresa
 
@@ -122,13 +130,18 @@ class Principal:  # creo una clase
                         Cliente = next(Clientes_csv, None) #avanza a la siguiente linea
                     
                     if Viajes:
-                        
-                        for cliente in Ventas_cliente.keys(): #traigo los nombres
-                            if Viajes[0] in Ventas_cliente[cliente]["Documento"]:
-                                Ventas_cliente[cliente]["Monto"] = float(Viajes[2]) + Ventas_cliente[cliente]["Monto"]
+                        print(f"{Viajes}")
+                        for key in Ventas_cliente.keys(): #traigo los nombres
+                            print(key)
+                            if Viajes[0] in Ventas_cliente[key]["Documento"]:
+                                Ventas_cliente[cliente]["Monto"] = float(Viajes[2]) + Ventas_cliente[key]["Monto"]
                         Viajes = next(Viajes_csv, None)
+
+                print(Ventas_cliente)
                 for cliente in Ventas_cliente.keys():
-                    print(f"{cliente} ${Ventas_cliente[cliente]['Monto'] }")
+                    self.formato()
+                    print(f"{cliente} ${Ventas_cliente[cliente]['Monto']:10.2f}")#Solo dos decimales
+                    self.formato()
         except IOError:
             print("\n Ocurrrio un error en el archivo  ") 
 
@@ -138,7 +151,9 @@ class Principal:  # creo una clase
         pass
 
 
-     
+    def formato(self):
+        print( "-" * os.get_terminal_size()[0])
+   
         
 
     def menu(self):
@@ -178,7 +193,8 @@ class Principal:  # creo una clase
             elif opcion == "5":
                 print("Digite numero de documento del empleado para ver información ")
                 empleado = input("")
-
+            
+            
             else:
                 print("\n Por favor elija una opcion valida")
 
