@@ -11,13 +11,22 @@ class BusquedaEmpleado:
         self.campos_viajes = []
         self.Datos_empleado = []
 
+
     
 
 class Principal:  # creo una clase
     def __init__(self):  # inicializo atributos
         self.csv_cliente = "Clientes.csv"
         self.csv_viajes = "viajes.csv"  # quitar despues
-        
+        self.archivo_log = "consulta.log"
+        self.opcion_menu = {
+                    1: "Ingresar nombre de los archivos donde se encuentran los datos ",
+                    2: "Buscar cliente",
+                    3: "Ver usuarios por empresa",
+                    4: "Total de Ventas de viajes por nombre de empresa",
+                    5: "Información por empleado",
+                    6: "Salir "
+                }
 
     def buscar_archivos(self):
         archivo_cliente = input(
@@ -197,24 +206,31 @@ class Principal:  # creo una clase
 
     def formato(self):
         print( "-" * os.get_terminal_size()[0])
-   
-
+    
+    def consultas_log(self, texto):
+        try:
+           with open(self.archivo_log, 'a',  newline='', encoding='UTF-8') as file:
+               file.write(texto + "\n")
+        
+        except IOError:
+            print("\n Ocurrrio un error en el archivo  ")
     
 
         
     def menu(self):
         while True:
-            print("\nMenú Usuario \nElija una opción: "
-                  "\n 1. Ingresar nombre de los archivos donde se encuentran los datos "
-                  "\n 2. Buscar cliente"
-                  "\n 3. Ver usuarios por empresa"
-                  "\n 4. Total de Ventas de viajes por nombre de empresa"
-                  "\n 5. Información por empleado"
-                  "\n 6. Salir ")
+            
+            print("\nMenú Usuario")
+            for clave, valor in self.opcion_menu.items():
+                print(f"{clave}. {valor}")
 
-            opcion = input("")
-
+            opcion = input("Elija una opción: ")
+            
+            if opcion.isnumeric():
+                self.consultas_log(self.opcion_menu[int(opcion)])
+                
             if opcion == "6":
+                print("bye bye")
                 exit()
 
             elif opcion == "1":
@@ -240,8 +256,11 @@ class Principal:  # creo una clase
                 dni = input("")
                 resultado = self.Buscar_empleado(dni)
                 self.print_resultado(resultado)
+            
+            
             else:
                 print("\n Por favor elija una opcion valida")
+           
 
 
 def main():
