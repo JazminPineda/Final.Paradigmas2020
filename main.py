@@ -2,12 +2,15 @@ import csv
 import os  # verifica si el archivo existia
 import operator
 
-
 class BusquedaEmpleado:
-    self.Termino = ""
-    self.Campos = []
-    self.Documento = ""
-    self.Viajes = []
+    def __init__(self):#se inicializan en cada instancia
+        self.Termino = ""  #atributos de clase
+        self.Documento = ""
+        self.Viajes = []
+        self.campos_clientes = []
+        self.campos_viajes = []
+        self.Datos_empleado = []
+
     
 
 class Principal:  # creo una clase
@@ -130,13 +133,14 @@ class Principal:  # creo una clase
         except IOError:
             print("\n Ocurrrio un error en el archivo  ") 
         
-        print( "-" * os.get_terminal_size()[0])
+        self.formato() 
         print(f"Empresa: {Empresa}  ${Total_ventas:0.2f}")
-        print( "-" * os.get_terminal_size()[0])
+        self.formato() 
 
     def Buscar_empleado(self, dni):
-        
-         try:
+        resultado = BusquedaEmpleado() #instancia de clase
+        resultado.Termino = dni #atributo
+        try:
             ## apareo
             with open(self.csv_cliente, 'r',  newline='', encoding='UTF-8') as f_clientes, \
                 open(self.csv_viajes, 'r',  newline='', encoding='UTF-8') as f_viajes:
@@ -144,25 +148,48 @@ class Principal:  # creo una clase
                 clientes_csv = csv.reader(f_clientes)
                 viajes_csv = csv.reader(f_viajes)
 
-                # Saltea los encabezados
-                next(clientes_csv)
-                next(viajes_csv)
+                cl = csv.DictReader(f_clientes)
+                vi = csv.DictReader(f_viajes)
 
+                #se guardan campos enla clase resultado
+                resultado.campos_clientes = cl.fieldnames
+                resultado.campos_viajes = vi.fieldnames
+
+ 
                 # Empieza a leer
                 cliente = next(clientes_csv, None)
                 viaje = next(viajes_csv, None)
                 while (cliente):
-                    print("{}, {} ({})".format(cliente[1], cliente[2], cliente[0]))
-                    if (not viaje or viaje[0] != cliente[0]):
-                        print("\tNo se registran viajes")
-                    while (viaje and viaje[0] == cliente[0]):
-                        print("\t{}: {}".format(viaje[1], viaje[2]))
+                    # print("{}, {} ({})".format(cliente[1], cliente[2], cliente[0]))
+                    
+                    if int(dni) == int(cliente[2]):
+                        resultado.Documento = cliente[2]
+                        resultado.Datos_empleado = cliente
+                    
+                    while(viaje): #leo linea y accedo si esta el doct verific q sea igual al q me solicitaron
+                        if int(dni) == int(viaje[0]):
+                            resultado.Viajes.append(viaje)#atributo viaje
                         viaje = next(viajes_csv, None)
-                    cliente = next(clientes_a, None)
+                    cliente = next(clientes_csv, None)
+                
+                  
+        except IOError:
+            print("\n Ocurrrio un error en el archivo  ")
+     
+        return resultado
 
-                # Cierro los archivos
-                clientes_a.close()
-                viajes_a.close()
+    def print_resultado(self, resultado):
+        self.formato() 
+        print(f"Documento: {resultado.Documento}")
+        self.formato() 
+        print(resultado.campos_clientes)
+        print(resultado.Datos_empleado)
+        self.formato()
+        print(f"Total viajes: {len(resultado.Viajes)}, Monto: {sum([float(viaje[2].replace(',','')) for viaje in resultado.Viajes])}") #for de manera comprensiva 
+        self.formato()
+        print(resultado.campos_viajes)
+        for lista in resultado.Viajes: #datos de la persona o cliente
+            print( lista)
 
     def Buscar_registros(self, Campo, Valor_buscar):
         pass
@@ -211,7 +238,8 @@ class Principal:  # creo una clase
             elif opcion == "5":
                 print("Digite numero de documento del empleado para ver información ")
                 dni = input("")
-                self.Buscar_empleado(dni)
+                resultado = self.Buscar_empleado(dni)
+                self.print_resultado(resultado)
             else:
                 print("\n Por favor elija una opcion valida")
 
