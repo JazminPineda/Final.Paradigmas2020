@@ -12,38 +12,37 @@ class BusquedaEmpleado:
         self.Datos_empleado = []
 
 
-    
-
 class Principal:  # creo una clase
     def __init__(self):  # inicializo atributos
-        self.csv_cliente = "Clientes.csv"
-        self.csv_viajes = "viajes.csv"  # quitar despues
-        self.archivo_log = "consulta.log"
+        self.csv_cliente = ""
+        self.csv_viajes = ""  
+        self.archivo_log = ""
         self.opcion_menu = {
-                    1: "Ingresar nombre de los archivos donde se encuentran los datos ",
+                    1: "Configuración archivos",
                     2: "Buscar cliente",
                     3: "Ver usuarios por empresa",
                     4: "Total de Ventas de viajes por nombre de empresa",
                     5: "Información por empleado",
                     6: "Salir "
                 }
-
-    def buscar_archivos(self):
-        archivo_cliente = input(
-            "Ingrese el nombre del archivo donde se encuentran los clientes ")
-        # validacion cuando el archiv no existe
-        while not os.path.exists(archivo_cliente):
-            archivo_cliente = input(
+    def valida_no_existe(self, archivo):
+        while not os.path.exists(archivo):
+            archivo = input(
                 "\n El archivo no se encuentra? Ingresarlo nuevamente ")
+    
+    def buscar_archivos(self):
+        archivo_cliente = input("Ingrese el nombre del archivo donde se encuentran los clientes ")
+        self.valida_no_existe(archivo_cliente) 
         self.csv_cliente = archivo_cliente
 
-        archivo_viajes = input(
-            "Ingrese el archivo donde desea buscar el total de viajes ")
-        # validacion cuando el archiv no existe
-        while not os.path.exists(archivo_viajes):
-            archivo_viajes = input(
-                "\n El archivo no se encuentra? Ingresarlo nuevamente ")
+        archivo_viajes = input("Ingrese el archivo donde desea buscar el total de viajes ")
+        self.valida_no_existe(archivo_viajes) 
         self.csv_viajes = archivo_viajes
+
+        nomb_log = input("Ingrese el nombre del archivo donde se guardará el .log ")
+        while len(nomb_log) == 0 and ".log" not in nomb_log:
+            nomb_log = input("El nombre del archivo no es valido. Ingrese el nombre del archivo donde se guardará el .log ")
+        self.archivo_log = nomb_log
 
     def Buscar_cliente(self, cliente):  # falta buscar cual archivo
 
@@ -61,7 +60,7 @@ class Principal:  # creo una clase
                 for line in lectura_csv:
 
                     # accedo al nombre de la columna#lower todo en minuso
-                    if cliente in line["Nombre"]:
+                    if cliente.lower() in line["Nombre"].lower():
                         #encontrada = True#
                         buscar_cliente.append(line)
                         self.formato()
@@ -208,12 +207,13 @@ class Principal:  # creo una clase
         print( "-" * os.get_terminal_size()[0])
     
     def consultas_log(self, texto):
-        try:
-           with open(self.archivo_log, 'a',  newline='', encoding='UTF-8') as file:
-               file.write(texto + "\n")
-        
-        except IOError:
-            print("\n Ocurrrio un error en el archivo  ")
+        if ( self.archivo_log != ""):
+            try:
+                with open(self.archivo_log, 'a',  newline='', encoding='UTF-8') as file:
+                    file.write(texto + "\n")#guarda la opcion del menu
+                
+            except IOError:
+                print("\n Ocurrrio un error en el archivo  ")
     
 
         
@@ -226,15 +226,20 @@ class Principal:  # creo una clase
 
             opcion = input("Elija una opción: ")
             
-            if opcion.isnumeric():
+            if opcion.isnumeric():#verificamos que es numerico
                 self.consultas_log(self.opcion_menu[int(opcion)])
-                
+
             if opcion == "6":
                 print("bye bye")
                 exit()
 
-            elif opcion == "1":
+            if opcion == "1":
                 self.buscar_archivos()
+            
+            if self.csv_cliente == "" or self.csv_viajes == "" or self.archivo_log == "":
+                print("Ir a la configuracion opción 1")
+
+            
 
             elif opcion == "2":
                 print("¿Cual cliente desea buscar? ")
