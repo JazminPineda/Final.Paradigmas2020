@@ -127,13 +127,13 @@ class Principal:  # creo una clase
                 # atributo de la clase
                 Clientes_csv = csv.DictReader(f_clientes)
                 Viajes_csv = csv.DictReader(f_viajes)
-                print(Clientes_csv)
+             
                 for linea in Clientes_csv:
                     # print(linea)
                     if empresa.lower() in linea["Empresa"].lower():
                         Empresa = linea["Empresa"]
                         Lista_doct.append(linea["Documento"])
-                print(Lista_doct)
+             
                 for linea in Viajes_csv:
                     if linea["Documento"] in  Lista_doct:
                         Total_ventas = float(linea["monto"].replace(",","")) + Total_ventas#La , se reem x nada
@@ -193,7 +193,7 @@ class Principal:  # creo una clase
         print(resultado.campos_clientes)
         print(resultado.Datos_empleado)
         self.formato()
-        print(f"Total viajes: {len(resultado.Viajes)}, Monto: {sum([float(viaje[2].replace(',','')) for viaje in resultado.Viajes])}") #for de manera comprensiva 
+        print(f"Total viajes: {len(resultado.Viajes)}, Monto: {sum([float(viaje[2].replace(',','')) for viaje in resultado.Viajes]):0.2f}") #for de manera comprensiva 
         self.formato()
         print(resultado.campos_viajes)
         for lista in resultado.Viajes: #datos de la persona o cliente
@@ -259,11 +259,15 @@ class Principal:  # creo una clase
             elif opcion == "5":
                 print("Digite numero de documento del empleado para ver información ")
                 dni = input("")
+                while not dni.isnumeric():
+                    print("No es valido. Digite numero de documento del empleado para ver información ")
+                    dni = input("")
+                    
                 resultado = self.Buscar_empleado(dni)
                 self.print_resultado(resultado)
             
             
-            else:
+            elif opcion not in ["6","1"]:
                 print("\n Por favor elija una opcion valida")
            
 
