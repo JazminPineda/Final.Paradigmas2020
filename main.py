@@ -226,7 +226,7 @@ class Principal:  # creo una clase
 
             opcion = input("Elija una opción: ")
             
-            if opcion.isnumeric():#verificamos que es numerico
+            if opcion.isnumeric() and opcion in self.opcion_menu.keys():#verificamos que es numerico
                 self.consultas_log(self.opcion_menu[int(opcion)])
 
             if opcion == "6":
